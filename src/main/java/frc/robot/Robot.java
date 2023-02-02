@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.sim.RobotModel;
@@ -27,12 +28,12 @@ public class Robot extends TimedRobot {
   private final Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
   // DoubleSolenoid corresponds to a double solenoid.
-  private final DoubleSolenoid doubleSolenoid =
-      new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private final DoubleSolenoid doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
   private static final int SOLENOID_BUTTON = 1;
   private static final int DOUBLE_SOLENOID_FORWARD = 2;
   private static final int DOUBLE_SOLENOID_REVERSE = 3;
+  
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
@@ -57,6 +58,10 @@ public class Robot extends TimedRobot {
     this.robotContainer = new RobotContainer();
 
     datalog.dataLogRobotContainerInit(this.robotContainer);
+
+    SmartDashboard.putData(solenoid);
+    SmartDashboard.putData(doubleSolenoid);
+
   }
 
   /**
