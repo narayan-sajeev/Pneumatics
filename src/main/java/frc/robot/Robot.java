@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,6 +21,18 @@ import frc.sim.RobotModel;
  * project.
  */
 public class Robot extends TimedRobot {
+  private final Joystick stick = new Joystick(0);
+
+  // Solenoid corresponds to a single solenoid.
+  private final Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+
+  // DoubleSolenoid corresponds to a double solenoid.
+  private final DoubleSolenoid doubleSolenoid =
+      new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+
+  private static final int SOLENOID_BUTTON = 1;
+  private static final int DOUBLE_SOLENOID_FORWARD = 2;
+  private static final int DOUBLE_SOLENOID_REVERSE = 3;
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
@@ -128,6 +144,23 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     datalog.startLoopTime();
     // Add code to run repeatedly during Teleop mode.
+    /*
+     * The output of GetRawButton is true/false depending on whether
+     * the button is pressed; Set takes a boolean for whether
+     * to use the default (false) channel or the other (true).
+     */
+    this.solenoid.set(this.stick.getRawButton(SOLENOID_BUTTON));
+
+    /*
+     * In order to set the double solenoid, if just one button
+     * is pressed, set the solenoid to correspond to that button.
+     * If both are pressed, set the solenoid will be set to Forwards.
+     */
+    if (this.stick.getRawButton(DOUBLE_SOLENOID_FORWARD)) {
+      this.doubleSolenoid.set(DoubleSolenoid.Value.kForward);
+    } else if (this.stick.getRawButton(DOUBLE_SOLENOID_REVERSE)) {
+      this.doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
+    }
   }
 
   @Override
@@ -143,14 +176,16 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     // Generally test mode will have the same Init and Periodic code as Teleop, so
-    // call them here. Replace if desired. If you don't call teleopPeriodic here, then add a call to
+    // call them here. Replace if desired. If you don't call teleopPeriodic here,
+    // then add a call to
     // StartLoopTime.
     teleopPeriodic();
     // Add code to run repeatedly during Test mode.
   }
 
   /*
-   * This set of functions is for simulation support only, and is not called on the real
+   * This set of functions is for simulation support only, and is not called on
+   * the real
    * robot. Put plant-model related functionality here. For training purposes,
    * students should not have to modify this functionality.
    */
